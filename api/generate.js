@@ -18,6 +18,8 @@ export default async function handler(req, res) {
     }
 
     try {
+        console.log('Received request:', req.body); // 添加日志
+
         const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -27,18 +29,23 @@ export default async function handler(req, res) {
             body: JSON.stringify(req.body)
         });
 
+        console.log('API Response status:', response.status); // 添加日志
+
         if (!response.ok) {
             const errorData = await response.json();
+            console.error('API Error response:', errorData); // 添加日志
             throw new Error(errorData.message || 'API request failed');
         }
 
         const data = await response.json();
+        console.log('API Success response:', data); // 添加日志
         res.status(200).json(data);
     } catch (error) {
         console.error('API Error:', error);
         res.status(500).json({ 
             message: 'Error generating greeting', 
-            error: error.message 
+            error: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
         });
     }
 } 
