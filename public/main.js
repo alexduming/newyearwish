@@ -17,6 +17,8 @@ async function generateGreeting() {
     const memory = document.getElementById('memory').value;
     const style = document.getElementById('style').value;
     const maxWords = document.getElementById('maxWords').value;
+    const terms = document.getElementById('terms').value;
+    const concerns = document.getElementById('concerns').value;
 
     // 根据关系类型设置语气
     const toneMap = {
@@ -61,13 +63,13 @@ async function generateGreeting() {
 - 共同回忆/关键细节：${memory}
 - 写作风格：${style}（${styleMap[style]}）
 - 字数要求：不超过${maxWords}字
-- 适当使用行业术语：${identity.includes('运营') ? '流量，转化，投放，复盘，增长' : 
+- 适当使用行业术语：${terms || (identity.includes('运营') ? '流量，转化，投放，复盘，增长' : 
                     identity.includes('程序') ? 'Bug，迭代，敏捷，PR' : 
                     identity.includes('设计') ? '排版，配色，留白，构图' : 
-                    '根据身份自动选择合适的行业术语'}
-- 对方特别在意的事：${relationship === 'work' ? '事业发展，团队管理' : 
+                    '根据身份自动选择合适的行业术语')}
+- 对方特别在意的事：${concerns || (relationship === 'work' ? '事业发展，团队管理' : 
                     relationship === 'friend' ? '生活品质，个人成长' : 
-                    '家人健康，生活幸福'}
+                    '家人健康，生活幸福')}
 
 写作要求：
 1. 开头要自然，避免"值此新春佳节"等老套开场白
