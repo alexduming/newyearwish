@@ -21,25 +21,49 @@ export default async function handler(req, res) {
     }
 
     try {
-        console.log('Making request to DeepSeek API');
-        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${process.env.API_KEY}`
-            },
-            body: JSON.stringify(req.body)
-        });
+        // 首先尝试 DeepSeek API
+        try {
+            console.log('Trying DeepSeek API...');
+            const deepseekResponse = await fetch('https://api.deepseek.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`
+                },
+                body: JSON.stringify(req.body)
+            });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error('DeepSeek API Error:', errorData);
-            throw new Error(errorData.message || 'API request failed');
+            if (deepseekResponse.ok) {
+                const data = await deepseekResponse.json();
+                console.log('DeepSeek API Response:', data);
+                return res.status(200).json(data);
+            }
+            throw new Error('DeepSeek API failed');
+        } catch (deepseekError) {
+            console.log('DeepSeek API failed, falling back to Siliconflow API...');
+            
+            // 如果 DeepSeek 失败，尝试 Siliconflow API
+            const siliconflowResponse = await fetch('https://api.siliconflow.com/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${process.env.SILICONFLOW_API_KEY}`
+                },
+                body: JSON.stringify({
+                    ...req.body,
+                    model: 'Qwen/QVQ-72B-Preview' // 使用 Siliconflow 的模型
+                })
+            });
+
+            if (!siliconflowResponse.ok) {
+                const errorData = await siliconflowResponse.json();
+                throw new Error(errorData.message || 'Both APIs failed');
+            }
+
+            const data = await siliconflowResponse.json();
+            console.log('Siliconflow API Response:', data);
+            res.status(200).json(data);
         }
-
-        const data = await response.json();
-        console.log('DeepSeek API Response:', data);
-        res.status(200).json(data);
     } catch (error) {
         console.error('Server Error:', error);
         res.status(500).json({ 
