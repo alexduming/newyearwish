@@ -1,1 +1,18 @@
- 
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "**/*",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "env": {
+    "API_KEY": "sk-76eb7d7a3dd3482d82370a43a541b32d"
+  }
+} 

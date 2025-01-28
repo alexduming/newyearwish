@@ -2,7 +2,8 @@
  * @description 调用DeepSeek API生成新年祝福
  */
 async function generateGreeting() {
-    const apiKey = 'sk-76eb7d7a3dd3482d82370a43a541b32d';
+    // 从环境变量获取 API KEY
+    const apiKey = process.env.API_KEY;
     const apiUrl = 'https://api.deepseek.com/chat/completions';
 
     // 获取表单数据
@@ -55,14 +56,15 @@ async function generateGreeting() {
 4. 减少引号使用，保持文字流畅性
 5. 适当使用4字祝福语，但不要堆砌成串
 6. 标点符号使用恰当，避免过多感叹号
+7. 写作风格要多样化，长短句搭配着来
 
 禁区提醒：
 - 避免过度奉承，
 - 不要太过随意或过于网络化，
 - 不要暴露工作或生活中的负面情绪，
-- 不要涉及敏感话题如薪资、晋升、八卦谣言等；
-- 不要用“首先”“然后”这种逻辑词 ；
-- 不要用类比和隐喻的手法，不要出现引号“”
+- 不要涉及敏感话题如薪资、晋升、八卦谣言等
+- 不要用"首先""然后"这种逻辑词，避免用框架式论述
+- 不要用类比和隐喻的手法，不要出现引号""
 
 
 额外加分项：

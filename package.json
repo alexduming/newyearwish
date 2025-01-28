@@ -1,1 +1,8 @@
- 
+{
+  "name": "ai-greeting",
+  "version": "1.0.0",
+  "description": "AI春节祝福生成器",
+  "scripts": {
+    "start": "npx serve"
+  }
+} 
