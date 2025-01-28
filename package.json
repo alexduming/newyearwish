@@ -2,7 +2,15 @@
   "name": "ai-greeting",
   "version": "1.0.0",
   "description": "AI春节祝福生成器",
+  "type": "module",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  },
+  "main": "index.js",
   "scripts": {
-    "start": "npx serve"
-  }
-} 
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
