@@ -7,6 +7,27 @@
     <!-- 使用 Tailwind CSS CDN 的生产版本 -->
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loading-spinner {
+            display: none;
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #ef4444;
+            border-radius: 50%;
+            margin: 1rem auto;
+            animation: spin 1s linear infinite;
+        }
+        .loading .loading-spinner {
+            display: block;
+        }
+        .loading #result {
+            opacity: 0.5;
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
     <div class="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
@@ -101,8 +122,10 @@
                 </button>
 
                 <!-- 结果展示区 -->
-                <div id="result" 
-                     class="mt-6 p-4 bg-gray-50 rounded-md min-h-[100px] whitespace-pre-wrap text-gray-700"></div>
+                <div id="resultContainer">
+                    <div class="loading-spinner"></div>
+                    <div id="result" class="mt-6 p-4 bg-gray-50 rounded-md min-h-[100px] whitespace-pre-wrap text-gray-700"></div>
+                </div>
                 
                 <!-- 引用信息 -->
                 <div class="mt-4 text-center text-sm text-gray-500 space-y-1">

@@ -78,6 +78,8 @@ async function generateGreeting() {
 
     try {
         // 显示加载状态
+        const resultContainer = document.getElementById('resultContainer');
+        resultContainer.classList.add('loading');
         document.getElementById('result').innerText = '祝福生成中...';
         
         const response = await fetch('/api/generate', {
@@ -102,10 +104,14 @@ async function generateGreeting() {
 
         const data = await response.json();
         
+        // 隐藏加载状态
+        resultContainer.classList.remove('loading');
         // 显示生成结果
         document.getElementById('result').innerText = data.choices[0].message.content;
     } catch (error) {
         console.error('生成失败:', error);
+        // 隐藏加载状态
+        document.getElementById('resultContainer').classList.remove('loading');
         document.getElementById('result').innerText = '生成失败,请稍后重试';
     }
 } 
