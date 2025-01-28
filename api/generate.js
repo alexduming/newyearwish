@@ -14,14 +14,10 @@ export default async function handler(req, res) {
     }
 
     if (req.method !== 'POST') {
-        return res.status(405).json({ 
-            error: 'Method not allowed',
-            message: 'Only POST requests are allowed'
-        });
+        return res.status(405).json({ error: 'Method not allowed' });
     }
 
     try {
-        console.log('Making request to DeepSeek API');
         const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -31,20 +27,10 @@ export default async function handler(req, res) {
             body: JSON.stringify(req.body)
         });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error('DeepSeek API Error:', errorData);
-            throw new Error(errorData.message || 'API request failed');
-        }
-
         const data = await response.json();
-        console.log('DeepSeek API Response:', data);
         res.status(200).json(data);
     } catch (error) {
-        console.error('Server Error:', error);
-        res.status(500).json({ 
-            error: 'Internal server error',
-            message: error.message 
-        });
+        console.error('API Error:', error);
+        res.status(500).json({ error: error.message });
     }
 } 
