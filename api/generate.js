@@ -38,7 +38,12 @@ export default async function handler(req, res) {
                 console.log('DeepSeek API Response:', data);
                 return res.status(200).json(data);
             }
+            
+            // DeepSeek API 错误处理
+            const deepseekError = await deepseekResponse.text();
+            console.error('DeepSeek API Error:', deepseekError);
             throw new Error('DeepSeek API failed');
+            
         } catch (deepseekError) {
             console.log('DeepSeek API failed, falling back to Siliconflow API...');
             
@@ -51,24 +56,43 @@ export default async function handler(req, res) {
                 },
                 body: JSON.stringify({
                     ...req.body,
-                    model: 'Qwen/QVQ-72B-Preview' // 使用 Siliconflow 的模型
+                    model: 'Qwen/QVQ-72B-Preview', // 使用 Siliconflow 的模型
+                    temperature: 0.7,
+                    max_tokens: 1000
                 })
             });
 
+            // Siliconflow API 错误处理
             if (!siliconflowResponse.ok) {
-                const errorData = await siliconflowResponse.json();
-                throw new Error(errorData.message || 'Both APIs failed');
+                const errorText = await siliconflowResponse.text();
+                console.error('Siliconflow API Error:', errorText);
+                try {
+                    const errorJson = JSON.parse(errorText);
+                    throw new Error(errorJson.message || 'Siliconflow API failed');
+                } catch (e) {
+                    throw new Error(errorText || 'Siliconflow API failed');
+                }
             }
 
             const data = await siliconflowResponse.json();
             console.log('Siliconflow API Response:', data);
-            res.status(200).json(data);
+            
+            // 转换 Siliconflow 响应格式为 DeepSeek 格式
+            const formattedResponse = {
+                choices: [{
+                    message: {
+                        content: data.choices[0].message.content
+                    }
+                }]
+            };
+            
+            res.status(200).json(formattedResponse);
         }
     } catch (error) {
         console.error('Server Error:', error);
         res.status(500).json({ 
             error: 'Internal server error',
-            message: error.message 
+            message: error.message || '生成失败，请稍后重试'
         });
     }
 } 
