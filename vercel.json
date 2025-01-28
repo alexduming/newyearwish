@@ -22,9 +22,5 @@
       "src": "/(.*)",
       "dest": "/public/$1"
     }
-  ],
-  "env": {
-    "DEEPSEEK_API_KEY": "sk-76eb7d7a3dd3482d82370a43a541b32d",
-    "SILICONFLOW_API_KEY": "sk-vrekamnwsvbcayspavnnrogsvwfbnuapqywlxzybghqsnlzp"
-  }
+  ]
 } 
