@@ -61,6 +61,13 @@ async function generateGreeting() {
 - 共同回忆/关键细节：${memory}
 - 写作风格：${style}（${styleMap[style]}）
 - 字数要求：不超过${maxWords}字
+- 适当使用行业术语：${identity.includes('产品') ? '选题会，10w+，公众号，转评赞' : 
+                    identity.includes('程序') ? 'Bug，迭代，敏捷，PR' : 
+                    identity.includes('设计') ? '排版，配色，留白，构图' : 
+                    '根据身份自动选择合适的行业术语'}
+- 对方特别在意的事：${relationship === 'work' ? '事业发展，团队管理' : 
+                    relationship === 'friend' ? '生活品质，个人成长' : 
+                    '家人健康，生活幸福'}
 
 写作要求：
 1. 开头要自然，避免"值此新春佳节"等老套开场白
@@ -115,7 +122,16 @@ async function generateGreeting() {
             })
         });
 
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
+        
+        if (!data.choices || !data.choices[0]) {
+            throw new Error('Invalid response format from API');
+        }
         
         // 隐藏加载状态
         resultContainer.classList.remove('loading');
@@ -125,6 +141,6 @@ async function generateGreeting() {
         console.error('生成失败:', error);
         // 隐藏加载状态
         document.getElementById('resultContainer').classList.remove('loading');
-        document.getElementById('result').innerText = '生成失败,请稍后重试';
+        document.getElementById('result').innerText = `生成失败: ${error.message}`;
     }
 } 

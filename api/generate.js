@@ -14,12 +14,14 @@ export default async function handler(req, res) {
     }
 
     if (req.method !== 'POST') {
-        return res.status(405).json({ message: 'Method not allowed' });
+        return res.status(405).json({ 
+            error: 'Method not allowed',
+            message: 'Only POST requests are allowed'
+        });
     }
 
     try {
-        console.log('Received request:', req.body); // 添加日志
-
+        console.log('Making request to DeepSeek API');
         const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -29,23 +31,20 @@ export default async function handler(req, res) {
             body: JSON.stringify(req.body)
         });
 
-        console.log('API Response status:', response.status); // 添加日志
-
         if (!response.ok) {
             const errorData = await response.json();
-            console.error('API Error response:', errorData); // 添加日志
+            console.error('DeepSeek API Error:', errorData);
             throw new Error(errorData.message || 'API request failed');
         }
 
         const data = await response.json();
-        console.log('API Success response:', data); // 添加日志
+        console.log('DeepSeek API Response:', data);
         res.status(200).json(data);
     } catch (error) {
-        console.error('API Error:', error);
+        console.error('Server Error:', error);
         res.status(500).json({ 
-            message: 'Error generating greeting', 
-            error: error.message,
-            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            error: 'Internal server error',
+            message: error.message 
         });
     }
 } 
