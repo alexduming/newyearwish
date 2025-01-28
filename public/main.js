@@ -65,8 +65,8 @@ async function generateGreeting() {
 - 字数要求：不超过${maxWords}字
 - 适当使用行业术语：${terms || (identity.includes('运营') ? '流量，转化，投放，复盘，增长' : 
                     identity.includes('程序') ? 'Bug，迭代，敏捷，PR' : 
-                    identity.includes('设计') ? '排版，配色，留白，构图' : 
-                    '根据身份自动选择合适的行业术语')}
+                    identity.includes('产品') ? '用户，需求，迭代，原型' :
+                    根据身份自动选择适当加入合适的行业术语')}
 - 对方特别在意的事：${concerns || (relationship === 'work' ? '事业发展，团队管理' : 
                     relationship === 'friend' ? '生活品质，个人成长' : 
                     '家人健康，生活幸福')}
@@ -141,14 +141,21 @@ async function generateGreeting() {
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+            let errorMessage = '生成失败，请稍后重试';
+            try {
+                const errorData = await response.text();
+                const jsonError = JSON.parse(errorData);
+                errorMessage = jsonError.message || errorMessage;
+            } catch (e) {
+                console.error('Error parsing error response:', e);
+            }
+            throw new Error(errorMessage);
         }
 
         const data = await response.json();
         
         if (!data.choices || !data.choices[0]) {
-            throw new Error('Invalid response format from API');
+            throw new Error('API 返回格式错误，请重试');
         }
         
         // 隐藏加载状态
@@ -157,8 +164,7 @@ async function generateGreeting() {
         document.getElementById('result').innerText = data.choices[0].message.content;
     } catch (error) {
         console.error('生成失败:', error);
-        // 隐藏加载状态
         document.getElementById('resultContainer').classList.remove('loading');
-        document.getElementById('result').innerText = `生成失败: ${error.message}`;
+        document.getElementById('result').innerText = error.message || '生成失败，请稍后重试';
     }
 } 

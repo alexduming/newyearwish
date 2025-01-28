@@ -30,7 +30,8 @@ export default async function handler(req, res) {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`
                 },
-                body: JSON.stringify(req.body)
+                body: JSON.stringify(req.body),
+                timeout: 30000 // 30秒超时
             });
 
             if (deepseekResponse.ok) {
@@ -48,17 +49,27 @@ export default async function handler(req, res) {
             console.log('DeepSeek API failed, falling back to Siliconflow API...');
             
             // 如果 DeepSeek 失败，尝试 Siliconflow API
-            const siliconflowResponse = await fetch('https://api.siliconflow.com/chat/completions', {
+            const siliconflowResponse = await fetch('https://api.siliconflow.com/v1/chat/completions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${process.env.SILICONFLOW_API_KEY}`
                 },
                 body: JSON.stringify({
-                    ...req.body,
-                    model: 'Qwen/QVQ-72B-Preview', // 使用 Siliconflow 的模型
+                    messages: [
+                        {
+                            role: 'system',
+                            content: '你是一个擅长写作的AI助手，特别善于创作温暖真诚的新年祝福。你会根据不同的关系和场合，调整文风和情感表达。'
+                        },
+                        {
+                            role: 'user',
+                            content: req.body.messages[1].content
+                        }
+                    ],
+                    model: 'Qwen-72B-Chat',
                     temperature: 0.7,
-                    max_tokens: 1000
+                    max_tokens: 1000,
+                    stream: false
                 })
             });
 
@@ -90,9 +101,17 @@ export default async function handler(req, res) {
         }
     } catch (error) {
         console.error('Server Error:', error);
+        // 改进错误消息
+        let errorMessage = '生成失败，请稍后重试';
+        if (error.message.includes('timeout')) {
+            errorMessage = '请求超时，请重试';
+        } else if (error.message.includes('API failed')) {
+            errorMessage = 'API 服务暂时不可用，请稍后重试';
+        }
+        
         res.status(500).json({ 
             error: 'Internal server error',
-            message: error.message || '生成失败，请稍后重试'
+            message: errorMessage
         });
     }
 } 
