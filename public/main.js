@@ -53,7 +53,7 @@ async function generateGreeting() {
 
 第一步：设定基础人设
 - 写文案的身份：${identity}
-- 接收对象：${receiver}
+- 接收对象身份：${receiver}
 - 关系定位：${relationship}（${toneMap[relationship]}）
 - 称呼：${title}
 
@@ -61,7 +61,7 @@ async function generateGreeting() {
 - 共同回忆/关键细节：${memory}
 - 写作风格：${style}（${styleMap[style]}）
 - 字数要求：不超过${maxWords}字
-- 适当使用行业术语：${identity.includes('产品') ? '选题会，10w+，公众号，转评赞' : 
+- 适当使用行业术语：${identity.includes('运营') ? '流量，转化，投放，复盘，增长' : 
                     identity.includes('程序') ? 'Bug，迭代，敏捷，PR' : 
                     identity.includes('设计') ? '排版，配色，留白，构图' : 
                     '根据身份自动选择合适的行业术语'}
