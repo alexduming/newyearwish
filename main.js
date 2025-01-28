@@ -2,8 +2,11 @@
  * @description 调用DeepSeek API生成新年祝福
  */
 async function generateGreeting() {
-    // 从环境变量获取 API KEY
-    const apiKey = process.env.API_KEY;
+    // 直接从环境变量中获取API KEY
+    const apiKey = 'sk-76eb7d7a3dd3482d82370a43a541b32d';
+    // 或者从后端获取
+    // const apiKey = await fetch('/api/getKey').then(res => res.text());
+    
     const apiUrl = 'https://api.deepseek.com/chat/completions';
 
     // 获取表单数据
@@ -77,11 +80,10 @@ async function generateGreeting() {
         // 显示加载状态
         document.getElementById('result').innerText = '祝福生成中...';
         
-        const response = await fetch(apiUrl, {
+        const response = await fetch('/api/generate', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 model: 'deepseek-chat',
@@ -92,7 +94,7 @@ async function generateGreeting() {
                     },
                     {role: 'user', content: prompt}
                 ],
-                temperature: 0.8, // 提高创意性
+                temperature: 0.8,
                 max_tokens: 1000,
                 stream: false
             })
