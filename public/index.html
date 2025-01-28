@@ -181,6 +181,33 @@
                 <div id="resultContainer">
                     <div class="loading-spinner"></div>
                     <div id="result" class="mt-6 p-4 bg-gray-50 rounded-md min-h-[100px] whitespace-pre-wrap text-gray-700"></div>
+                    
+                    <!-- 操作按钮组 -->
+                    <div class="mt-4 flex space-x-4">
+                        <!-- 复制按钮 -->
+                        <button onclick="copyToClipboard()" 
+                                class="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200 flex items-center justify-center space-x-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+                            </svg>
+                            <span>一键复制</span>
+                        </button>
+                        
+                        <!-- 转发到微信按钮 -->
+                        <button onclick="shareToWeChat()" 
+                                class="flex-1 bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200 flex items-center justify-center space-x-2">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M8.2,13.3c-0.3,0-0.6-0.2-0.6-0.5c0-0.3,0.3-0.5,0.6-0.5c0.3,0,0.6,0.2,0.6,0.5C8.8,13.1,8.5,13.3,8.2,13.3z M12.9,13.3 c-0.3,0-0.6-0.2-0.6-0.5c0-0.3,0.3-0.5,0.6-0.5c0.3,0,0.6,0.2,0.6,0.5C13.5,13.1,13.2,13.3,12.9,13.3z"></path>
+                                <path d="M21.5,11c0-4.5-4.5-8.2-10-8.2C5.9,2.8,1.5,6.5,1.5,11c0,2.3,1.2,4.4,3.1,5.8L4,19.6c-0.1,0.2,0,0.4,0.2,0.5 c0.1,0,0.2,0.1,0.3,0c0.1,0,0.2-0.1,0.2-0.1l2.7-1.9c1.3,0.4,2.7,0.6,4.2,0.6c5.5,0,10-3.7,10-8.2"></path>
+                            </svg>
+                            <span>转发微信</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 添加复制成功提示 -->
+                <div id="copySuccess" class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg transform translate-y-full opacity-0 transition-all duration-300">
+                    复制成功！
                 </div>
                 
                 <!-- 引用信息 -->
@@ -223,6 +250,56 @@
         content.classList.toggle('show');
         icon.style.transform = content.classList.contains('show') ? 'rotate(180deg)' : '';
         text.textContent = content.classList.contains('show') ? '收起详细选项' : '补充更多细节';
+    }
+
+    // 复制到剪贴板
+    function copyToClipboard() {
+        const result = document.getElementById('result');
+        const text = result.innerText;
+        
+        // 创建临时文本区域
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        
+        try {
+            document.execCommand('copy');
+            // 显示成功提示
+            const successTip = document.getElementById('copySuccess');
+            successTip.style.transform = 'translateY(0)';
+            successTip.style.opacity = '1';
+            
+            // 3秒后隐藏提示
+            setTimeout(() => {
+                successTip.style.transform = 'translateY(full)';
+                successTip.style.opacity = '0';
+            }, 3000);
+        } catch (err) {
+            console.error('复制失败:', err);
+        }
+        
+        document.body.removeChild(textarea);
+    }
+
+    // 转发到微信
+    function shareToWeChat() {
+        const result = document.getElementById('result');
+        const text = encodeURIComponent(result.innerText);
+        
+        // 使用微信网页版分享链接
+        // 注意：由于微信的限制，这里只能跳转到微信，具体选择好友需要用户手动操作
+        window.location.href = `weixin://`;
+        
+        // 如果是移动设备，可以尝试使用 URL Scheme
+        if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+            // 复制内容到剪贴板
+            copyToClipboard();
+            // 延迟跳转，给用户一点时间看到复制成功提示
+            setTimeout(() => {
+                window.location.href = `weixin://`;
+            }, 1000);
+        }
     }
     </script>
 </body>
